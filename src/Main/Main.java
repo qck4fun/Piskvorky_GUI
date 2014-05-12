@@ -4,20 +4,21 @@ import javax.swing.SwingUtilities;
 
 import GUI.MainWindow;
 import Other.Connection;
+import Other.LoginTextInsert;
 
 public class Main {
-	
-	private static MainWindow mainWindow;
-	
-	public static void main(String[] args) {
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				mainWindow = new MainWindow();
-			}
-		});
-		new Thread(new Connection(mainWindow)).start();
-	}
+
+    private static MainWindow mainWindow;
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                mainWindow = new MainWindow();
+            }
+        });
+            new Thread(new Connection(mainWindow)).start();
+    }
 }

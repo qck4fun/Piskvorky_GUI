@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import GUI.MainWindow;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class Connection implements Runnable {
 
@@ -53,15 +51,16 @@ public final class Connection implements Runnable {
     }
 
     private void startTheGame() {
-	output.println(101 + " Adam");
-        //output.println(101 + " " + mainWindow.getLoginText());
+	//output.println(101 + " Adam");
+        output.println(101 + " " + LoginTextInsert.userName);
+        System.out.println(LoginTextInsert.userName);
+        System.out.println("lalal");
     }
 
     @Override
     public void run() {
         while (!done) {
             try {
-                if(mainWindow.getLoginText().getText() != "") {
                 incMsg = input.readLine();
                 if (incMsg != null) {
                         String ProtocolNum = Protocol.extractProtocolNum(incMsg);
@@ -87,7 +86,6 @@ public final class Connection implements Runnable {
                     socket.close();
                     done = true;
                     System.out.println("konec komunikace");
-                }
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
