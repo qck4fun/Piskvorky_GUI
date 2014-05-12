@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 
 import Other.GameGridClick;
 import Other.GameGridMap;
+import Other.LoginTextInsert;
+import java.awt.BorderLayout;
+import javax.swing.JTextField;
 
 public class MainWindow extends JFrame {
 
@@ -24,23 +27,24 @@ public class MainWindow extends JFrame {
 
 	private JPanel mainPanel;
 
-	private String loginText;
+	private JTextField loginText;
 
 	public MainWindow() {
 		gameGridMap = new GameGridMap();
-		createLoginWindow();
 		init();
-		createGameGrid();
+                createLoginWindow();
+		//createGameGrid();
 	}
 
 	private void init() {
 		setTitle("Piškvorky");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(500, 500);
+		//setSize(500, 500);
 		setVisible(true);
 
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(0, 16));
+		//mainPanel.setLayout(new GridLayout(0, 16));
+                
 		add(mainPanel);
 		
 		/*
@@ -68,16 +72,24 @@ public class MainWindow extends JFrame {
 	}
 
 	private void createLoginWindow() {
-		loginText = JOptionPane.showInputDialog("Přihlaš se:");
-		while (loginText.equals("")) {
-				JOptionPane.showMessageDialog(null, "Vyplň uživatelské jméno",
-						"Přihlašovací chyba", JOptionPane.ERROR_MESSAGE);
-			loginText = JOptionPane.showInputDialog("Přihlaš se:");
-		}
+            JLabel login = new JLabel("Zadej přihlašovací jméno: ");
+            loginText = new JTextField(20);
+            loginText.addActionListener(new LoginTextInsert());
+            mainPanel.add(login);
+            mainPanel.add(loginText);
+            pack();
+            
+            
+//            loginText = JOptionPane.showInputDialog("Přihlaš se:");
+//		while (loginText.equals("")) {
+//				JOptionPane.showMessageDialog(null, "Vyplň uživatelské jméno",
+//						"Přihlašovací chyba", JOptionPane.ERROR_MESSAGE);
+//			loginText = JOptionPane.showInputDialog("Přihlaš se:");
+//		}
 		//System.out.println(loginText);
 	}
 
-	public String getLoginText() {
+	public JTextField getLoginText() {
 		return loginText;
 	}
 }

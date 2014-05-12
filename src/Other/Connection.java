@@ -10,86 +10,89 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import GUI.MainWindow;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class Connection implements Runnable {
 
-	public static final int PORT = 1099;
+    public static final int PORT = 1099;
 
-	private MainWindow mainWindow;
+    private MainWindow mainWindow;
 
-	private InetAddress address;
-	private Socket socket;
-	private BufferedReader input;
-	private PrintWriter output;
-	
-	private boolean done;
-	private static String incMsg;
+    private InetAddress address;
+    private Socket socket;
+    private BufferedReader input;
+    private PrintWriter output;
 
-	public Connection(MainWindow mainWindow) {
-		this.mainWindow = mainWindow;
-		setInputAndOutput();
-		startTheGame();
-	}
+    private boolean done;
+    private static String incMsg;
 
-	private void setInputAndOutput() {
-		try {
-			address = InetAddress.getByName("127.0.1.1");
-			socket = new Socket(address, PORT);
+    public Connection(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+        setInputAndOutput();
+        startTheGame();
+    }
 
-			input = new BufferedReader(new InputStreamReader(
-					socket.getInputStream(), "UTF-8"));
+    private void setInputAndOutput() {
+        try {
+            address = InetAddress.getByName("127.0.1.1");
+            socket = new Socket(address, PORT);
 
-			output = new PrintWriter(new OutputStreamWriter(
-					socket.getOutputStream(), "UTF-8"), true);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+            input = new BufferedReader(new InputStreamReader(
+                    socket.getInputStream(), "UTF-8"));
 
-	private void startTheGame() {
-		output.println(101 + " Adam");
-		//output.println(101 + " " + mainWindow.getLoginText());
-	}
+            output = new PrintWriter(new OutputStreamWriter(
+                    socket.getOutputStream(), "UTF-8"), true);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void run() {
-		while (!done) {
-			try {			
-				incMsg = input.readLine();
-				if(incMsg!=null) {								
-					String ProtocolNum = Protocol.extractProtocolNum(incMsg);
-					
-					String blabla = null;
-					
-					switch (ProtocolNum) {
-		            case "601":
-		                blabla = "přihlášen";
-		                break;
-		            case "602":
-		                blabla = "nepřihlášen";
-		                break;
-		            case "603":
-		                blabla = "game ready";
-		                break;
-		            default: 
-		                blabla = "0";
-		                break;
-					}
-			       System.out.println(blabla);
-		        }
-				else {
-					socket.close();
-					done = true;
-					System.out.println("konec komunikace");
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}		
+    private void startTheGame() {
+	output.println(101 + " Adam");
+        //output.println(101 + " " + mainWindow.getLoginText());
+    }
+
+    @Override
+    public void run() {
+        while (!done) {
+            try {
+                if(mainWindow.getLoginText().getText() != "") {
+                incMsg = input.readLine();
+                if (incMsg != null) {
+                        String ProtocolNum = Protocol.extractProtocolNum(incMsg);
+
+                        String serverResponse = null;
+
+                        switch (ProtocolNum) {
+                            case "601":
+                                serverResponse = "přihlášen";
+                                break;
+                            case "602":
+                                serverResponse = "nepřihlášen";
+                                break;
+                            case "603":
+                                serverResponse = "game ready";
+                                break;
+                            default:
+                                serverResponse = "0";
+                                break;
+                        }
+                        System.out.println(serverResponse);
+                } else {
+                    socket.close();
+                    done = true;
+                    System.out.println("konec komunikace");
+                }
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 }
