@@ -1,5 +1,6 @@
 package Other;
 
+import GUI.MainWindow;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,8 +9,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
-
-import GUI.MainWindow;
 
 public final class Connection implements Runnable {
 
@@ -25,10 +24,11 @@ public final class Connection implements Runnable {
     private boolean done;
     private static String incMsg;
 
-    public Connection(MainWindow mainWindow) {
-        this.mainWindow = mainWindow;
+    /**
+     *
+     */
+    public Connection() {
         setInputAndOutput();
-        //startTheGame();
     }
 
     private void setInputAndOutput() {
@@ -50,37 +50,34 @@ public final class Connection implements Runnable {
         }
     }
 
-    private void startTheGame() {
-        output.println(101 + " " + LoginTextInsert.userName);
-        System.out.println(LoginTextInsert.userName);
-    }
-
     @Override
     public void run() {
-        startTheGame();
         while (!done) {
             try {
                 incMsg = input.readLine();
                 if (incMsg != null) {
-                        String ProtocolNum = Protocol.extractProtocolNum(incMsg);
+                    String ProtocolNum = Protocol.extractProtocolNum(incMsg);
 
-                        String serverResponse = null;
+                    String serverResponse = null;
 
-                        switch (ProtocolNum) {
-                            case "601":
-                                serverResponse = "přihlášen";
-                                break;
-                            case "602":
-                                serverResponse = "nepřihlášen";
-                                break;
-                            case "603":
-                                serverResponse = "game ready";
-                                break;
-                            default:
-                                serverResponse = "0";
-                                break;
-                        }
-                        System.out.println(serverResponse);
+                    switch (ProtocolNum) {
+                        case "601":
+                            mainWindow.createMainWindow();
+                            //mainWindow.gameReadyWait();
+                            serverResponse = "přihlášen";
+                            break;
+                        case "602":
+                            mainWindow.createLoginErrorWindow();
+                            serverResponse = "nepřihlášen";
+                            break;
+                        case "603":
+                            serverResponse = "game ready";
+                            break;
+                        default:
+                            serverResponse = "0";
+                            break;
+                    }
+                    System.out.println(serverResponse);
                 } else {
                     socket.close();
                     done = true;
@@ -91,5 +88,13 @@ public final class Connection implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public synchronized void addToOutput(String message) {
+        output.println(message);
+    }
+
+    public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
     }
 }
