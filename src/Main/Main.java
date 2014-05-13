@@ -6,18 +6,22 @@ import GUI.MainWindow;
 import Other.Connection;
 
 public class Main {
-
-    private static MainWindow mainWindow;
+    
+    private static Connection connection;
 
     public static void main(String[] args) {
 
+        connection = new Connection();
+        new Thread(connection).start();
+        
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                mainWindow = new MainWindow();
+                new MainWindow(connection);
             }
         });
-            //new Thread(new Connection(mainWindow)).start();
+        
+        //new Thread(new Connection()).start();
     }
 }

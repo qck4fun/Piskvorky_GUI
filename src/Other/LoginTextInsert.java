@@ -15,20 +15,22 @@ import javax.swing.JOptionPane;
  * @author adam
  */
 public class LoginTextInsert implements ActionListener {
-    public static String userName;
     
-    private MainWindow mainWindow;
-
-    public LoginTextInsert(MainWindow mainWindow) {
+    private final MainWindow mainWindow;
+    
+    private final Connection connection;
+    
+    public LoginTextInsert(MainWindow mainWindow, Connection connection) {
         this.mainWindow = mainWindow;
+        this.connection = connection;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!(e.getActionCommand().equals(""))) {
-            userName = e.getActionCommand();
-            new Thread(new Connection(mainWindow)).start();
-            mainWindow.createMainWindow();
+            String userName = e.getActionCommand();
+            System.out.println(userName);
+            connection.addToOutput(101 + " " + userName);
         } else {
             JOptionPane.showMessageDialog(null, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
         }

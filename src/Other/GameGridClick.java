@@ -12,6 +12,7 @@ public class GameGridClick implements MouseListener {
 	
 	private GameGridMap gameGridMap;
 	private static Point key;
+        private ImageIcon icon;
 
 	public GameGridClick(GameGridMap gameGridMap) {
 		this.gameGridMap = gameGridMap;
@@ -19,12 +20,13 @@ public class GameGridClick implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+            
 		key = null;
 
 		for (Entry<Point, JLabel> blabla : gameGridMap.getGameGridMap().entrySet()) {
 			if (blabla.getValue().equals(e.getComponent())) {
 				key = blabla.getKey();
-				gameGridMap.getGameGridMap().get(key).setIcon(new ImageIcon("/home/adam/workspace/Piskvorky_GUI/src/img/cross.png"));
+				gameGridMap.getGameGridMap().get(key).setIcon(new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png"));
 				gameGridMap.getGameGridMap().get(key).repaint();
 				break;
 			}
@@ -33,6 +35,10 @@ public class GameGridClick implements MouseListener {
 		//System.out.println("Sloupec " + key.x + " Řádek " + key.y);
 		System.out.println(GameGridClick.getClickCoordinates().x + " " + GameGridClick.getClickCoordinates().y);
 	}
+        
+        public void changeImageIcon() {
+            icon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
+        }
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
