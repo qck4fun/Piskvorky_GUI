@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 
 import GUI.MainWindow;
 import Other.Connection;
-import Other.LoginTextInsert;
 
 public class Main {
 
@@ -19,6 +18,6 @@ public class Main {
                 mainWindow = new MainWindow();
             }
         });
-            new Thread(new Connection(mainWindow)).start();
+            //new Thread(new Connection(mainWindow)).start();
     }
 }

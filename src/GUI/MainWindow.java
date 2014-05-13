@@ -1,5 +1,6 @@
 package GUI;
 
+import Other.Connection;
 import java.awt.GridLayout;
 import java.awt.Point;
 
@@ -26,6 +27,8 @@ public class MainWindow extends JFrame {
 	private GameGridMap gameGridMap;
 
 	private JPanel mainPanel;
+        
+        private JLabel login;
 
 	private JTextField loginText;
 
@@ -72,9 +75,9 @@ public class MainWindow extends JFrame {
 	}
 
 	private void createLoginWindow() {
-            JLabel login = new JLabel("Zadej přihlašovací jméno: ");
+            login = new JLabel("Zadej přihlašovací jméno: ");
             loginText = new JTextField(20);
-            loginText.addActionListener(new LoginTextInsert());
+            loginText.addActionListener(new LoginTextInsert(this));
             mainPanel.add(login);
             mainPanel.add(loginText);
             pack();
@@ -88,6 +91,15 @@ public class MainWindow extends JFrame {
 //		}
 		//System.out.println(loginText);
 	}
+        
+        public void createMainWindow() {
+            mainPanel.remove(login);
+            mainPanel.remove(loginText);
+            setSize(500, 500);
+            mainPanel.setLayout(new GridLayout(0, 16));
+            
+            
+        }
 
 	public JTextField getLoginText() {
 		return loginText;

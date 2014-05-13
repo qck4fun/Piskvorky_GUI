@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package Other;
 
+import GUI.MainWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
@@ -15,19 +15,22 @@ import javax.swing.JOptionPane;
  * @author adam
  */
 public class LoginTextInsert implements ActionListener {
-    
-    public static boolean loggedIn = false;
     public static String userName;
+    
+    private MainWindow mainWindow;
+
+    public LoginTextInsert(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(!(e.getActionCommand().equals(""))) {
+        if (!(e.getActionCommand().equals(""))) {
             userName = e.getActionCommand();
-            loggedIn = true;
-        }
-        else {
+            new Thread(new Connection(mainWindow)).start();
+            mainWindow.createMainWindow();
+        } else {
             JOptionPane.showMessageDialog(null, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
-            loggedIn = false;
         }
     }
 }

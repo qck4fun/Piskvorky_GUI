@@ -28,7 +28,7 @@ public final class Connection implements Runnable {
     public Connection(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setInputAndOutput();
-        startTheGame();
+        //startTheGame();
     }
 
     private void setInputAndOutput() {
@@ -51,14 +51,13 @@ public final class Connection implements Runnable {
     }
 
     private void startTheGame() {
-	//output.println(101 + " Adam");
         output.println(101 + " " + LoginTextInsert.userName);
         System.out.println(LoginTextInsert.userName);
-        System.out.println("lalal");
     }
 
     @Override
     public void run() {
+        startTheGame();
         while (!done) {
             try {
                 incMsg = input.readLine();
