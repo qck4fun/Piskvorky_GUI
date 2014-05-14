@@ -66,7 +66,6 @@ public final class Connection implements Runnable {
 
                     switch (protocolNum) {
                         case "601":
-                            //mainWindow.createMainWindow();
                             gameReady = false;
                             mainWindow.gameReadyWait();
                             serverResponse = "přihlášen";
@@ -84,16 +83,19 @@ public final class Connection implements Runnable {
                             serverResponse = "místo obsazeno";
                             break;
                         case "611":
+                            mainWindow.paintIcon(incMsg);
                             serverResponse = "jeho značka umístěna";
                             break;
                         case "612":
-                            mainWindow.paintMyIcon(messageBody);
+                            mainWindow.paintIcon(incMsg);
                             serverResponse = "tvoje značka umístěna";
                             break;
                         case "614":
+                            mainWindow.getTurnText().setText("NEHRAJEŠ");
                             serverResponse = "nehraješ";
                             break;
                         case "615":
+                            mainWindow.getTurnText().setText("HRAJEŠ");
                             serverResponse = "hraješ";
                             break;
                         case "620":
@@ -108,16 +110,12 @@ public final class Connection implements Runnable {
                         case "700":
                             serverResponse = "nová hra";
                             break;
-                        case "103":
-                            serverResponse = "regame";
-                            break;
                             
                         default:
                             serverResponse = "0";
                             break;
                     }
                     System.out.println(serverResponse);
-                    //System.out.println(incMsg);
                 } else {
                     socket.close();
                     done = true;
@@ -136,10 +134,6 @@ public final class Connection implements Runnable {
 
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
-    }
-
-    public String getProtocolNum() {
-        return protocolNum;
     }
     
     public boolean getGameReady() {

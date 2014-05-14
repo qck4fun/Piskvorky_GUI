@@ -4,6 +4,7 @@ import Other.Connection;
 import Other.GameGridClick;
 import Other.GameGridMap;
 import Other.LoginTextInsert;
+import Other.Protocol;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -29,17 +30,23 @@ public class MainWindow extends JFrame {
     private Connection connection;
     
     private JPanel mainPanel;
+    
+    private JPanel infoPanel;
+
+    private JPanel gridPanel;
 
     private JLabel login;
 
     private JTextField loginText;
-    
+
     private JProgressBar progressBar;
     
+    private JLabel turnText;
+
     private JLabel text;
-    
+
     private Icon myIcon;
-    
+
     private Icon enemyIcon;
 
     public MainWindow(Connection connection) {
@@ -53,21 +60,30 @@ public class MainWindow extends JFrame {
         setTitle("Piškvorky");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
+        
+        mainPanel = new JPanel(new BorderLayout());
 
-        mainPanel = new JPanel();
+        infoPanel = new JPanel(new BorderLayout(20, 0));
+        gridPanel = new JPanel();
 
         login = new JLabel("Zadej přihlašovací jméno: ");
         loginText = new JTextField(20);
         loginText.addActionListener(new LoginTextInsert(this, connection));
 
-        mainPanel.add(login);
-        mainPanel.add(loginText);
-        
+        infoPanel.add(login, BorderLayout.WEST);
+        infoPanel.add(loginText, BorderLayout.EAST);
+
         progressBar = new JProgressBar();
-        text = new JLabel("Vyčkejte na připojení dalšího hrače");
+        text = new JLabel(" Vyčkejte na připojení dalšího hrače");
+        
         myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
         enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
+        
+        turnText = new JLabel("blabla");
 
+        mainPanel.add(infoPanel, BorderLayout.NORTH);
+        mainPanel.add(gridPanel, BorderLayout.SOUTH);
+        
         add(mainPanel);
 
         pack();
@@ -91,16 +107,20 @@ public class MainWindow extends JFrame {
                 // label.setText(col + "x" + row);
                 label.setBorder(BorderFactory.createLineBorder(null));
                 gameGridMap.getGameGridMap().put(coordinates, label);
-                mainPanel.add(label);
+                gridPanel.add(label);
             }
         }
     }
 
     public void createMainWindow() {
-        setSize(550, 550);
-        mainPanel.setLayout(new GridLayout(0, 16));
+        setSize(550, 570);
+        
+        infoPanel.add(turnText, BorderLayout.CENTER);
+        
+        gridPanel.setLayout(new GridLayout(0, 16));
         createGameGrid();
         
+
         validate();
         repaint();
     }
@@ -110,32 +130,57 @@ public class MainWindow extends JFrame {
     }
 
     public void gameReadyWait() {
-        mainPanel.remove(login);
-        mainPanel.remove(loginText);
-        setSize(300, 100);
+        infoPanel.remove(login);
+        infoPanel.remove(loginText);
+        setSize(260, 80);
         progressBar.setIndeterminate(true);
         if (connection.getGameReady() == true) {
-            mainPanel.remove(progressBar);
-            mainPanel.remove(text);
+            infoPanel.remove(progressBar);
+            infoPanel.remove(text);
             createMainWindow();
-        }
-        else {    
-            mainPanel.add(progressBar);
-            mainPanel.add(text);
+        } else {
+            infoPanel.add(progressBar, BorderLayout.NORTH);
+            infoPanel.add(text);
         }
 
         validate();
         repaint();
     }
-    
+
+    public void paintIcon(String incMsg) {
+        int protocolNum = Integer.valueOf(Protocol.extractProtocolNum(incMsg));
+
+        Icon icon = null;
+
+        if (protocolNum == 612) {
+            icon = myIcon;
+        } else if (protocolNum == 611) {
+            icon = enemyIcon;
+        }
+
+        String messageBody = Protocol.extractMessageBody(incMsg);
+        String[] msgBodyArray = messageBody.split("\\,");
+        Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
+        gameGridMap.getGameGridMap().get(key).setIcon(icon);
+        gameGridMap.getGameGridMap().get(key).repaint();
+    }
+
+    public JLabel getTurnText() {
+        return turnText;
+    }
+}
+    /*
     public void paintMyIcon(String messageBody) {
         String[] msgBodyArray = messageBody.split("\\,");
         Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
         gameGridMap.getGameGridMap().get(key).setIcon(myIcon);
         gameGridMap.getGameGridMap().get(key).repaint();
     }
-    
-    private void paintEnemyIcon() {
-        
+
+    public void paintEnemyIcon(String messageBody) {
+        String[] msgBodyArray = messageBody.split("\\,");
+        Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
+        gameGridMap.getGameGridMap().get(key).setIcon(enemyIcon);
+        gameGridMap.getGameGridMap().get(key).repaint();
     }
-}
+    */
