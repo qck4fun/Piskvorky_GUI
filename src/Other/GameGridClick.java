@@ -11,11 +11,13 @@ import javax.swing.JLabel;
 public class GameGridClick implements MouseListener {
 	
 	private GameGridMap gameGridMap;
+        private Connection connection;
 	private static Point key;
         private ImageIcon icon;
 
-	public GameGridClick(GameGridMap gameGridMap) {
+	public GameGridClick(GameGridMap gameGridMap, Connection connection) {
 		this.gameGridMap = gameGridMap;
+                this.connection = connection;
 	}
 
 	@Override
@@ -34,6 +36,7 @@ public class GameGridClick implements MouseListener {
 		//System.out.println("Sloupec " + key.getX() + " Řádek " + key.getY());
 		//System.out.println("Sloupec " + key.x + " Řádek " + key.y);
 		System.out.println(GameGridClick.getClickCoordinates().x + " " + GameGridClick.getClickCoordinates().y);
+                connection.addToOutput(102 + " " + GameGridClick.getClickCoordinates().x + "," + GameGridClick.getClickCoordinates().y);
 	}
         
         public void changeImageIcon() {
@@ -64,7 +67,7 @@ public class GameGridClick implements MouseListener {
 		
 	}
 	
-	public static Point getClickCoordinates() {
+	private static Point getClickCoordinates() {
 		return key;
 	}
 }

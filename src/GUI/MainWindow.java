@@ -4,6 +4,7 @@ import Other.Connection;
 import Other.GameGridClick;
 import Other.GameGridMap;
 import Other.LoginTextInsert;
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import javax.swing.BorderFactory;
@@ -72,7 +73,7 @@ public class MainWindow extends JFrame {
                 JLabel label = new JLabel(
                         new ImageIcon(
                                 "/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/blank.png"));
-                label.addMouseListener(new GameGridClick(gameGridMap));
+                label.addMouseListener(new GameGridClick(gameGridMap, connection));
                 // label.setText(col + "x" + row);
                 label.setBorder(BorderFactory.createLineBorder(null));
                 gameGridMap.getGameGridMap().put(coordinates, label);
@@ -97,9 +98,14 @@ public class MainWindow extends JFrame {
     }
     
     public void gameReadyWait() {
+        mainPanel.remove(login);
+        mainPanel.remove(loginText);
+        setSize(300, 100);
         JProgressBar progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
+        JLabel text = new JLabel("Vyčkejte na připojení dalšího hrače");
         mainPanel.add(progressBar);
+        mainPanel.add(text);
         
         validate();
         repaint();
