@@ -9,65 +9,65 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class GameGridClick implements MouseListener {
-	
-	private GameGridMap gameGridMap;
-        private Connection connection;
-	private static Point key;
-        private ImageIcon icon;
 
-	public GameGridClick(GameGridMap gameGridMap, Connection connection) {
-		this.gameGridMap = gameGridMap;
-                this.connection = connection;
-	}
+    private GameGridMap gameGridMap;
+    private Connection connection;
+    private static Point key;
+    private ImageIcon icon;
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-            
-		key = null;
+    public GameGridClick(GameGridMap gameGridMap, Connection connection) {
+        this.gameGridMap = gameGridMap;
+        this.connection = connection;
+    }
 
-		for (Entry<Point, JLabel> blabla : gameGridMap.getGameGridMap().entrySet()) {
-			if (blabla.getValue().equals(e.getComponent())) {
-				key = blabla.getKey();
-				gameGridMap.getGameGridMap().get(key).setIcon(new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png"));
-				gameGridMap.getGameGridMap().get(key).repaint();
-				break;
-			}
-		}
-		//System.out.println("Sloupec " + key.getX() + " Řádek " + key.getY());
-		//System.out.println("Sloupec " + key.x + " Řádek " + key.y);
-		System.out.println(GameGridClick.getClickCoordinates().x + " " + GameGridClick.getClickCoordinates().y);
-                connection.addToOutput(102 + " " + GameGridClick.getClickCoordinates().x + "," + GameGridClick.getClickCoordinates().y);
-	}
-        
-        public void changeImageIcon() {
-            icon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+        key = null;
+
+        for (Entry<Point, JLabel> blabla : gameGridMap.getGameGridMap().entrySet()) {
+            if (blabla.getValue().equals(e.getComponent())) {
+                key = blabla.getKey();
+                gameGridMap.getGameGridMap().get(key).setIcon(new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png"));
+                gameGridMap.getGameGridMap().get(key).repaint();
+                break;
+            }
         }
+		//System.out.println("Sloupec " + key.getX() + " Řádek " + key.getY());
+        //System.out.println("Sloupec " + key.x + " Řádek " + key.y);
+        System.out.println(102 + " " + GameGridClick.getClickCoordinates().x + "," + GameGridClick.getClickCoordinates().y);
+        connection.addToOutput(102 + " " + GameGridClick.getClickCoordinates().x + "," + GameGridClick.getClickCoordinates().y);
+    }
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    private void changeImageIcon() {
+        icon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
+    }
 
-	@Override
-	public void mouseExited(MouseEvent e) {
+    @Override
+    public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
+    @Override
+    public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
-	
-	private static Point getClickCoordinates() {
-		return key;
-	}
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+    }
+
+    private static Point getClickCoordinates() {
+        return key;
+    }
 }

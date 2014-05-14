@@ -30,7 +30,11 @@ public class MainWindow extends JFrame {
     private JLabel login;
 
     private JTextField loginText;
-
+    
+    private JProgressBar progressBar = new JProgressBar();
+    
+    private JLabel text = new JLabel("Vyčkejte na připojení dalšího hrače");
+    
     private Connection connection;
 
     public MainWindow(Connection connection) {
@@ -83,8 +87,8 @@ public class MainWindow extends JFrame {
     }
 
     public void createMainWindow() {
-        mainPanel.remove(login);
-        mainPanel.remove(loginText);
+        //mainPanel.remove(login);
+        //mainPanel.remove(loginText);
         setSize(550, 550);
         mainPanel.setLayout(new GridLayout(0, 16));
 
@@ -92,21 +96,26 @@ public class MainWindow extends JFrame {
         validate();
         repaint();
     }
-    
+
     public void createLoginErrorWindow() {
         JOptionPane.showMessageDialog(this, "Došlo k chybě při přihlašování.\nZkuste to prosím znovu.", "Přihlašovací chyba", JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public void gameReadyWait() {
         mainPanel.remove(login);
         mainPanel.remove(loginText);
         setSize(300, 100);
-        JProgressBar progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
-        JLabel text = new JLabel("Vyčkejte na připojení dalšího hrače");
-        mainPanel.add(progressBar);
-        mainPanel.add(text);
-        
+        if (connection.getGameReady() == true) {
+            mainPanel.remove(progressBar);
+            mainPanel.remove(text);
+            createMainWindow();
+        }
+        else {    
+            mainPanel.add(progressBar);
+            mainPanel.add(text);
+        }
+
         validate();
         repaint();
     }

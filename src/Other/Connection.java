@@ -23,6 +23,8 @@ public final class Connection implements Runnable {
 
     private boolean done;
     private static String incMsg;
+    private String ProtocolNum;
+    private boolean gameReady;
 
     /**
      *
@@ -56,14 +58,15 @@ public final class Connection implements Runnable {
             try {
                 incMsg = input.readLine();
                 if (incMsg != null) {
-                    String ProtocolNum = Protocol.extractProtocolNum(incMsg);
+                    ProtocolNum = Protocol.extractProtocolNum(incMsg);
 
                     String serverResponse = null;
 
                     switch (ProtocolNum) {
                         case "601":
-                            mainWindow.createMainWindow();
-                            //mainWindow.gameReadyWait();
+                            //mainWindow.createMainWindow();
+                            gameReady = false;
+                            mainWindow.gameReadyWait();
                             serverResponse = "přihlášen";
                             break;
                         case "602":
@@ -71,13 +74,47 @@ public final class Connection implements Runnable {
                             serverResponse = "nepřihlášen";
                             break;
                         case "603":
+                            gameReady = true;
+                            mainWindow.gameReadyWait();
                             serverResponse = "game ready";
                             break;
+                        case "610":
+                            serverResponse = "místo obsazeno";
+                            break;
+                        case "611":
+                            serverResponse = "jeho značka umístěna";
+                            break;
+                        case "612":
+                            serverResponse = "tvoje značka umístěna";
+                            break;
+                        case "614":
+                            serverResponse = "nehraješ";
+                            break;
+                        case "615":
+                            serverResponse = "hraješ";
+                            break;
+                        case "620":
+                            serverResponse = "výhra";
+                            break;
+                        case "621":
+                            serverResponse = "prohra";
+                            break;
+                        case "622":
+                            serverResponse = "remíza";
+                            break;
+                        case "700":
+                            serverResponse = "nová hra";
+                            break;
+                        case "103":
+                            serverResponse = "regame";
+                            break;
+                            
                         default:
                             serverResponse = "0";
                             break;
                     }
                     System.out.println(serverResponse);
+                    //System.out.println(incMsg);
                 } else {
                     socket.close();
                     done = true;
@@ -96,5 +133,13 @@ public final class Connection implements Runnable {
 
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
+    }
+
+    public String getProtocolNum() {
+        return ProtocolNum;
+    }
+    
+    public boolean getGameReady() {
+        return gameReady;
     }
 }
