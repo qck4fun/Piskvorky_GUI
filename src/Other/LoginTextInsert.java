@@ -32,7 +32,7 @@ public class LoginTextInsert implements ActionListener {
             System.out.println(userName);
             connection.addToOutput(101 + " " + userName);
         } else {
-            JOptionPane.showMessageDialog(null, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

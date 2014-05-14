@@ -6,6 +6,7 @@ import Other.GameGridMap;
 import Other.LoginTextInsert;
 import Other.Protocol;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Point;
 import javax.swing.BorderFactory;
@@ -25,9 +26,9 @@ public class MainWindow extends JFrame {
      */
     private static final long serialVersionUID = 1L;
 
-    private GameGridMap gameGridMap;
+    private final GameGridMap gameGridMap;
 
-    private Connection connection;
+    private final Connection connection;
     
     private JPanel mainPanel;
     
@@ -59,11 +60,12 @@ public class MainWindow extends JFrame {
     private void init() {
         setTitle("Piškvorky");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
         setVisible(true);
         
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel();
 
-        infoPanel = new JPanel(new BorderLayout(20, 0));
+        infoPanel = new JPanel(new BorderLayout());
         gridPanel = new JPanel();
 
         login = new JLabel("Zadej přihlašovací jméno: ");
@@ -74,12 +76,13 @@ public class MainWindow extends JFrame {
         infoPanel.add(loginText, BorderLayout.EAST);
 
         progressBar = new JProgressBar();
-        text = new JLabel(" Vyčkejte na připojení dalšího hrače");
+        text = new JLabel("Vyčkejte na připojení dalšího hrače");
         
         myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
         enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
         
-        turnText = new JLabel("blabla");
+        turnText = new JLabel("NEHRAJEŠ");
+        turnText.setForeground(Color.RED);
 
         mainPanel.add(infoPanel, BorderLayout.NORTH);
         mainPanel.add(gridPanel, BorderLayout.SOUTH);
@@ -87,12 +90,6 @@ public class MainWindow extends JFrame {
         add(mainPanel);
 
         pack();
-
-        /*
-         * for (Point blabla : gameGridMap.getGameGridMap().keySet()) {
-         * 
-         * System.out.println(blabla.getX() + " " + blabla.getY()); }
-         */
     }
 
     private void createGameGrid() {
@@ -101,10 +98,8 @@ public class MainWindow extends JFrame {
                 Point coordinates = new Point(col, row);
                 // JLabel label = new JLabel(col + "x" + row);
                 JLabel label = new JLabel(
-                        new ImageIcon(
-                                "/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/blank.png"));
+                        new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/blank.png"));
                 label.addMouseListener(new GameGridClick(gameGridMap, connection));
-                // label.setText(col + "x" + row);
                 label.setBorder(BorderFactory.createLineBorder(null));
                 gameGridMap.getGameGridMap().put(coordinates, label);
                 gridPanel.add(label);
@@ -113,7 +108,7 @@ public class MainWindow extends JFrame {
     }
 
     public void createMainWindow() {
-        setSize(550, 570);
+        setSize(525, 580);
         
         infoPanel.add(turnText, BorderLayout.CENTER);
         
@@ -132,6 +127,7 @@ public class MainWindow extends JFrame {
     public void gameReadyWait() {
         infoPanel.remove(login);
         infoPanel.remove(loginText);
+        infoPanel.remove(turnText);
         setSize(260, 80);
         progressBar.setIndeterminate(true);
         if (connection.getGameReady() == true) {
@@ -148,14 +144,16 @@ public class MainWindow extends JFrame {
     }
 
     public void paintIcon(String incMsg) {
-        int protocolNum = Integer.valueOf(Protocol.extractProtocolNum(incMsg));
-
+        String protocolNum = Protocol.extractProtocolNum(incMsg);
         Icon icon = null;
 
-        if (protocolNum == 612) {
-            icon = myIcon;
-        } else if (protocolNum == 611) {
-            icon = enemyIcon;
+        switch (protocolNum) {
+            case "612":
+                icon = myIcon;
+                break;
+            case "611":
+                icon = enemyIcon;
+                break;
         }
 
         String messageBody = Protocol.extractMessageBody(incMsg);
@@ -168,19 +166,32 @@ public class MainWindow extends JFrame {
     public JLabel getTurnText() {
         return turnText;
     }
-}
-    /*
-    public void paintMyIcon(String messageBody) {
-        String[] msgBodyArray = messageBody.split("\\,");
-        Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
-        gameGridMap.getGameGridMap().get(key).setIcon(myIcon);
-        gameGridMap.getGameGridMap().get(key).repaint();
-    }
+    
+    public void gameEnd(String protocolNum) {
+        String errorText = null;
 
-    public void paintEnemyIcon(String messageBody) {
-        String[] msgBodyArray = messageBody.split("\\,");
-        Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
-        gameGridMap.getGameGridMap().get(key).setIcon(enemyIcon);
-        gameGridMap.getGameGridMap().get(key).repaint();
+        switch (protocolNum) {
+            case "620":
+                errorText = "Vyhrál jsi. Chceš si zahrát ještě jednou?";
+                break;
+            case "621":
+                errorText = "Prohrál jsi. Chceš si zahrát ještě jednou?";
+                break;
+            case "622":
+                errorText = "Remíza! Neuvěřitelné. Chceš si zahrát ještě jednou?";
+                break;
+        }
+        int result = JOptionPane.showOptionDialog(this, errorText, "Konec hry", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if(result == 0) {
+            connection.addToOutput("103");
+        }
+        else if( result == 1) {
+            System.exit(0);
+        }
     }
-    */
+    
+    public void gameReset() {
+        gridPanel.removeAll();
+        gameReadyWait();
+    }
+}

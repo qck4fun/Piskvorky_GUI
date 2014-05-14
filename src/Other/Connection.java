@@ -1,6 +1,7 @@
 package Other;
 
 import GUI.MainWindow;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +61,6 @@ public final class Connection implements Runnable {
                 incMsg = input.readLine();
                 if (incMsg != null) {
                     protocolNum = Protocol.extractProtocolNum(incMsg);
-                    messageBody = Protocol.extractMessageBody(incMsg);
 
                     String serverResponse = null;
 
@@ -91,23 +91,32 @@ public final class Connection implements Runnable {
                             serverResponse = "tvoje značka umístěna";
                             break;
                         case "614":
+                            mainWindow.getTurnText().setForeground(Color.RED);
                             mainWindow.getTurnText().setText("NEHRAJEŠ");
+                            mainWindow.setEnabled(false);
                             serverResponse = "nehraješ";
                             break;
                         case "615":
+                            mainWindow.getTurnText().setForeground(Color.BLUE);
                             mainWindow.getTurnText().setText("HRAJEŠ");
+                            mainWindow.setEnabled(true);
                             serverResponse = "hraješ";
                             break;
                         case "620":
+                            mainWindow.gameEnd(protocolNum);
                             serverResponse = "výhra";
                             break;
                         case "621":
+                            mainWindow.gameEnd(protocolNum);
                             serverResponse = "prohra";
                             break;
                         case "622":
+                            mainWindow.gameEnd(protocolNum);
                             serverResponse = "remíza";
                             break;
                         case "700":
+                            gameReady = false;
+                            mainWindow.gameReset();
                             serverResponse = "nová hra";
                             break;
                             

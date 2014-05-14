@@ -21,7 +21,5 @@ public class Main {
                 new MainWindow(connection);
             }
         });
-        
-        //new Thread(new Connection()).start();
     }
 }
