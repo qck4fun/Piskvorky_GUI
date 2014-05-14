@@ -29,8 +29,8 @@ public class LoginTextInsert implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (!(e.getActionCommand().equals(""))) {
             String userName = e.getActionCommand();
-            System.out.println(userName);
             connection.addToOutput(101 + " " + userName);
+            userName = null;
         } else {
             JOptionPane.showMessageDialog(mainWindow, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
         }

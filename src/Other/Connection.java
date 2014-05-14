@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class Connection implements Runnable {
 
@@ -32,14 +35,23 @@ public final class Connection implements Runnable {
      *
      */
     public Connection() {
+        setConnection();
         setInputAndOutput();
+    }
+    
+    public void setConnection() {    
+        try {
+            address = InetAddress.getByName("127.0.1.1");
+            socket = new Socket(address, PORT);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void setInputAndOutput() {
         try {
-            address = InetAddress.getByName("127.0.1.1");
-            socket = new Socket(address, PORT);
-
             input = new BufferedReader(new InputStreamReader(
                     socket.getInputStream(), "UTF-8"));
 
@@ -115,9 +127,12 @@ public final class Connection implements Runnable {
                             serverResponse = "remíza";
                             break;
                         case "700":
-                            gameReady = false;
-                            mainWindow.gameReset();
+                            mainWindow.regame();
                             serverResponse = "nová hra";
+                            break;
+                        case "701":
+                            mainWindow.opponentDisconnected();
+                            serverResponse = "spoluhráč se odpojil";
                             break;
                             
                         default:

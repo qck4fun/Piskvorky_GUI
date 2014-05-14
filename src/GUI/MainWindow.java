@@ -29,9 +29,9 @@ public class MainWindow extends JFrame {
     private final GameGridMap gameGridMap;
 
     private final Connection connection;
-    
+
     private JPanel mainPanel;
-    
+
     private JPanel infoPanel;
 
     private JPanel gridPanel;
@@ -41,7 +41,7 @@ public class MainWindow extends JFrame {
     private JTextField loginText;
 
     private JProgressBar progressBar;
-    
+
     private JLabel turnText;
 
     private JLabel text;
@@ -62,7 +62,7 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
-        
+
         mainPanel = new JPanel();
 
         infoPanel = new JPanel(new BorderLayout());
@@ -77,19 +77,37 @@ public class MainWindow extends JFrame {
 
         progressBar = new JProgressBar();
         text = new JLabel("Vyčkejte na připojení dalšího hrače");
-        
+
         myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
         enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
-        
+
         turnText = new JLabel("NEHRAJEŠ");
         turnText.setForeground(Color.RED);
 
         mainPanel.add(infoPanel, BorderLayout.NORTH);
         mainPanel.add(gridPanel, BorderLayout.SOUTH);
-        
+
         add(mainPanel);
 
         pack();
+    }
+    
+    private void init2() {
+        login = new JLabel("Zadej přihlašovací jméno: ");
+        loginText = new JTextField(20);
+        loginText.addActionListener(new LoginTextInsert(this, connection));
+
+        infoPanel.add(login, BorderLayout.WEST);
+        infoPanel.add(loginText, BorderLayout.EAST);
+
+        progressBar = new JProgressBar();
+        text = new JLabel("Vyčkejte na připojení dalšího hrače");
+
+        myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
+        enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
+
+        turnText = new JLabel("NEHRAJEŠ");
+        turnText.setForeground(Color.RED);
     }
 
     private void createGameGrid() {
@@ -109,12 +127,11 @@ public class MainWindow extends JFrame {
 
     public void createMainWindow() {
         setSize(525, 580);
-        
+
         infoPanel.add(turnText, BorderLayout.CENTER);
-        
+
         gridPanel.setLayout(new GridLayout(0, 16));
         createGameGrid();
-        
 
         validate();
         repaint();
@@ -166,7 +183,7 @@ public class MainWindow extends JFrame {
     public JLabel getTurnText() {
         return turnText;
     }
-    
+
     public void gameEnd(String protocolNum) {
         String errorText = null;
 
@@ -182,16 +199,34 @@ public class MainWindow extends JFrame {
                 break;
         }
         int result = JOptionPane.showOptionDialog(this, errorText, "Konec hry", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if(result == 0) {
-            connection.addToOutput("103");
-        }
-        else if( result == 1) {
+        if (result == 0) {
+            int resultOption = JOptionPane.showOptionDialog(this, "Chceš si zahrát proti tomu samému spoluhráči nebo proti jinému?\n Ano: stejný\nNe: jiný", "Nová hra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (resultOption == 0) {
+                connection.addToOutput("103");
+            } else {
+                freshNewGame();
+            }
+        } else if (result == 1) {
             System.exit(0);
         }
     }
-    
-    public void gameReset() {
+
+    public void opponentDisconnected() {
+        JOptionPane.showMessageDialog(this, "Spoluhráč se odpojil", "Chyba", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void regame() {
+        infoPanel.removeAll();
         gridPanel.removeAll();
         gameReadyWait();
     }
-}
+
+    public void freshNewGame() {
+        connection.setConnection();
+        infoPanel.removeAll();
+        gridPanel.removeAll();
+        init2();
+        this.validate();
+        this.repaint();
+        }
+    }
