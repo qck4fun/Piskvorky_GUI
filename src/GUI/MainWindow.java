@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,17 +26,21 @@ public class MainWindow extends JFrame {
 
     private GameGridMap gameGridMap;
 
+    private Connection connection;
+    
     private JPanel mainPanel;
 
     private JLabel login;
 
     private JTextField loginText;
     
-    private JProgressBar progressBar = new JProgressBar();
+    private JProgressBar progressBar;
     
-    private JLabel text = new JLabel("Vyčkejte na připojení dalšího hrače");
+    private JLabel text;
     
-    private Connection connection;
+    private Icon myIcon;
+    
+    private Icon enemyIcon;
 
     public MainWindow(Connection connection) {
         this.connection = connection;
@@ -57,6 +62,11 @@ public class MainWindow extends JFrame {
 
         mainPanel.add(login);
         mainPanel.add(loginText);
+        
+        progressBar = new JProgressBar();
+        text = new JLabel("Vyčkejte na připojení dalšího hrače");
+        myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
+        enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
 
         add(mainPanel);
 
@@ -87,12 +97,10 @@ public class MainWindow extends JFrame {
     }
 
     public void createMainWindow() {
-        //mainPanel.remove(login);
-        //mainPanel.remove(loginText);
         setSize(550, 550);
         mainPanel.setLayout(new GridLayout(0, 16));
-
         createGameGrid();
+        
         validate();
         repaint();
     }
@@ -118,5 +126,16 @@ public class MainWindow extends JFrame {
 
         validate();
         repaint();
+    }
+    
+    public void paintMyIcon(String messageBody) {
+        String[] msgBodyArray = messageBody.split("\\,");
+        Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
+        gameGridMap.getGameGridMap().get(key).setIcon(myIcon);
+        gameGridMap.getGameGridMap().get(key).repaint();
+    }
+    
+    private void paintEnemyIcon() {
+        
     }
 }

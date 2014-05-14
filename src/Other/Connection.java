@@ -23,7 +23,8 @@ public final class Connection implements Runnable {
 
     private boolean done;
     private static String incMsg;
-    private String ProtocolNum;
+    private String protocolNum;
+    private String messageBody;
     private boolean gameReady;
 
     /**
@@ -58,11 +59,12 @@ public final class Connection implements Runnable {
             try {
                 incMsg = input.readLine();
                 if (incMsg != null) {
-                    ProtocolNum = Protocol.extractProtocolNum(incMsg);
+                    protocolNum = Protocol.extractProtocolNum(incMsg);
+                    messageBody = Protocol.extractMessageBody(incMsg);
 
                     String serverResponse = null;
 
-                    switch (ProtocolNum) {
+                    switch (protocolNum) {
                         case "601":
                             //mainWindow.createMainWindow();
                             gameReady = false;
@@ -85,6 +87,7 @@ public final class Connection implements Runnable {
                             serverResponse = "jeho značka umístěna";
                             break;
                         case "612":
+                            mainWindow.paintMyIcon(messageBody);
                             serverResponse = "tvoje značka umístěna";
                             break;
                         case "614":
@@ -136,7 +139,7 @@ public final class Connection implements Runnable {
     }
 
     public String getProtocolNum() {
-        return ProtocolNum;
+        return protocolNum;
     }
     
     public boolean getGameReady() {
