@@ -163,4 +163,13 @@ public final class Connection implements Runnable {
     public boolean getGameReady() {
         return gameReady;
     }
+    
+    public void socketClose() {
+        try {
+            done = true;
+            socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

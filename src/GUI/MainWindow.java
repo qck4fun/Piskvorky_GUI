@@ -28,7 +28,7 @@ public class MainWindow extends JFrame {
 
     private final GameGridMap gameGridMap;
 
-    private final Connection connection;
+    private Connection connection;
 
     private JPanel mainPanel;
 
@@ -108,13 +108,14 @@ public class MainWindow extends JFrame {
 
         turnText = new JLabel("NEHRAJEŠ");
         turnText.setForeground(Color.RED);
+        
+        pack();
     }
 
     private void createGameGrid() {
         for (int row = 0; row < 16; row++) {
             for (int col = 0; col < 16; col++) {
                 Point coordinates = new Point(col, row);
-                // JLabel label = new JLabel(col + "x" + row);
                 JLabel label = new JLabel(
                         new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/blank.png"));
                 label.addMouseListener(new GameGridClick(gameGridMap, connection));
@@ -222,11 +223,11 @@ public class MainWindow extends JFrame {
     }
 
     public void freshNewGame() {
-        connection.setConnection();
-        infoPanel.removeAll();
-        gridPanel.removeAll();
-        init2();
-        this.validate();
-        this.repaint();
+        this.dispose();
+        connection.socketClose();
+        connection = null;
+        connection = new Connection();
+        new Thread(connection).start();
+        new MainWindow(connection);
         }
     }

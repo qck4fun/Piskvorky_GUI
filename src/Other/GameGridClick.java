@@ -27,7 +27,6 @@ public class GameGridClick implements MouseListener {
             if (blabla.getValue().equals(e.getComponent())) {
                 key = blabla.getKey();
                 connection.addToOutput(102 + " " + key.x + "," + key.y);
-                System.out.println(102 + " " + key.x + "," + key.y);
                 break;
             }
         }

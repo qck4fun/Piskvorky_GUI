@@ -6,12 +6,10 @@ import GUI.MainWindow;
 import Other.Connection;
 
 public class Main {
-    
-    private static Connection connection;
 
     public static void main(String[] args) {
 
-        connection = new Connection();
+        Connection connection = new Connection();
         new Thread(connection).start();
         
         SwingUtilities.invokeLater(new Runnable() {
