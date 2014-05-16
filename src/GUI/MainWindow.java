@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -27,27 +28,17 @@ public class MainWindow extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private final GameGridMap gameGridMap;
-
     private Connection connection;
 
     private JPanel mainPanel;
-
     private JPanel infoPanel;
-
     private JPanel gridPanel;
-
     private JLabel login;
-
     private JTextField loginText;
-
     private JProgressBar progressBar;
-
     private JLabel turnText;
-
     private JLabel text;
-
     private Icon myIcon;
-
     private Icon enemyIcon;
 
     public MainWindow(Connection connection) {
@@ -77,10 +68,13 @@ public class MainWindow extends JFrame {
 
         progressBar = new JProgressBar();
         text = new JLabel("Vyčkejte na připojení dalšího hrače");
-
-        myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
-        enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
-
+                    
+        URL myIconUrl = getClass().getClassLoader().getResource("img/cross.png");
+        URL enemyIconUrl = getClass().getClassLoader().getResource("img/circle.png");
+        
+        myIcon = new ImageIcon(myIconUrl);
+        enemyIcon = new ImageIcon(enemyIconUrl);
+        
         turnText = new JLabel("NEHRAJEŠ");
         turnText.setForeground(Color.RED);
 
@@ -91,33 +85,13 @@ public class MainWindow extends JFrame {
 
         pack();
     }
-    
-    private void init2() {
-        login = new JLabel("Zadej přihlašovací jméno: ");
-        loginText = new JTextField(20);
-        loginText.addActionListener(new LoginTextInsert(this, connection));
-
-        infoPanel.add(login, BorderLayout.WEST);
-        infoPanel.add(loginText, BorderLayout.EAST);
-
-        progressBar = new JProgressBar();
-        text = new JLabel("Vyčkejte na připojení dalšího hrače");
-
-        myIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/cross.png");
-        enemyIcon = new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/circle.png");
-
-        turnText = new JLabel("NEHRAJEŠ");
-        turnText.setForeground(Color.RED);
-        
-        pack();
-    }
 
     private void createGameGrid() {
+        URL background = getClass().getClassLoader().getResource("img/blank.png");
         for (int row = 0; row < 16; row++) {
             for (int col = 0; col < 16; col++) {
                 Point coordinates = new Point(col, row);
-                JLabel label = new JLabel(
-                        new ImageIcon("/home/adam/Google Drive/vše/4. semestr/klient server aplikace v javě/1. semestrální práce/Piskvorky_GUI/src/img/blank.png"));
+                JLabel label = new JLabel(new ImageIcon(background));
                 label.addMouseListener(new GameGridClick(gameGridMap, connection));
                 label.setBorder(BorderFactory.createLineBorder(null));
                 gameGridMap.getGameGridMap().put(coordinates, label);
@@ -126,14 +100,11 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void createMainWindow() {
+    public void repaintMainWindow() {
         setSize(525, 580);
-
         infoPanel.add(turnText, BorderLayout.CENTER);
-
         gridPanel.setLayout(new GridLayout(0, 16));
         createGameGrid();
-
         validate();
         repaint();
     }
@@ -151,12 +122,11 @@ public class MainWindow extends JFrame {
         if (connection.getGameReady() == true) {
             infoPanel.remove(progressBar);
             infoPanel.remove(text);
-            createMainWindow();
+            repaintMainWindow();
         } else {
             infoPanel.add(progressBar, BorderLayout.NORTH);
             infoPanel.add(text);
         }
-
         validate();
         repaint();
     }
@@ -164,16 +134,14 @@ public class MainWindow extends JFrame {
     public void paintIcon(String incMsg) {
         String protocolNum = Protocol.extractProtocolNum(incMsg);
         Icon icon = null;
-
         switch (protocolNum) {
-            case "612":
+            case Protocol.YOUR_MARK_PLACED:
                 icon = myIcon;
                 break;
-            case "611":
+            case Protocol.ENEMY_MARK_PLACED:
                 icon = enemyIcon;
                 break;
         }
-
         String messageBody = Protocol.extractMessageBody(incMsg);
         String[] msgBodyArray = messageBody.split("\\,");
         Point key = new Point(Integer.valueOf(msgBodyArray[0]), Integer.valueOf(msgBodyArray[1]));
@@ -187,15 +155,14 @@ public class MainWindow extends JFrame {
 
     public void gameEnd(String protocolNum) {
         String errorText = null;
-
         switch (protocolNum) {
-            case "620":
+            case Protocol.WIN:
                 errorText = "Vyhrál jsi. Chceš si zahrát ještě jednou?";
                 break;
-            case "621":
+            case Protocol.LOSS:
                 errorText = "Prohrál jsi. Chceš si zahrát ještě jednou?";
                 break;
-            case "622":
+            case Protocol.DRAW:
                 errorText = "Remíza! Neuvěřitelné. Chceš si zahrát ještě jednou?";
                 break;
         }
@@ -207,13 +174,19 @@ public class MainWindow extends JFrame {
             } else {
                 freshNewGame();
             }
-        } else if (result == 1) {
+        } else {
             System.exit(0);
         }
     }
 
     public void opponentDisconnected() {
-        JOptionPane.showMessageDialog(this, "Spoluhráč se odpojil", "Chyba", JOptionPane.ERROR_MESSAGE);
+        int result = JOptionPane.showOptionDialog(this, "Spoluhráč se odpojil. Chceš hru spustit znovu?\nPokud ne, program bude ukončen.", "Chyba", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
+        if(result == 0) {
+            freshNewGame();
+        }
+        else {
+            System.exit(0);
+        }
     }
 
     public void regame() {
@@ -223,11 +196,14 @@ public class MainWindow extends JFrame {
     }
 
     public void freshNewGame() {
-        this.dispose();
+        dispose();
         connection.socketClose();
-        connection = null;
         connection = new Connection();
         new Thread(connection).start();
         new MainWindow(connection);
-        }
     }
+    
+    public void positionOccupied() {
+        JOptionPane.showMessageDialog(this, "Toto místo je již obsazeno!", "Chyba", JOptionPane.ERROR_MESSAGE);
+    }
+}

@@ -28,7 +28,6 @@ public final class Connection implements Runnable {
     private boolean done;
     private static String incMsg;
     private String protocolNum;
-    private String messageBody;
     private boolean gameReady;
 
     /**
@@ -77,73 +76,65 @@ public final class Connection implements Runnable {
                     String serverResponse = null;
 
                     switch (protocolNum) {
-                        case "601":
+                        case Protocol.LOGIN_SUCCESS:
                             gameReady = false;
                             mainWindow.gameReadyWait();
-                            serverResponse = "přihlášen";
                             break;
-                        case "602":
+                        case Protocol.LOGIN_FAIL:
                             mainWindow.createLoginErrorWindow();
-                            serverResponse = "nepřihlášen";
                             break;
-                        case "603":
+                        case Protocol.GAME_READY:
                             gameReady = true;
                             mainWindow.gameReadyWait();
-                            serverResponse = "game ready";
                             break;
-                        case "610":
-                            serverResponse = "místo obsazeno";
+                        case Protocol.POSITION_OCCUPIED:
+                            mainWindow.positionOccupied();
                             break;
-                        case "611":
+                        case Protocol.ENEMY_MARK_PLACED:
                             mainWindow.paintIcon(incMsg);
-                            serverResponse = "jeho značka umístěna";
                             break;
-                        case "612":
+                        case Protocol.YOUR_MARK_PLACED:
                             mainWindow.paintIcon(incMsg);
-                            serverResponse = "tvoje značka umístěna";
                             break;
-                        case "614":
+                        case Protocol.NOT_YOUR_TURN:
                             mainWindow.getTurnText().setForeground(Color.RED);
                             mainWindow.getTurnText().setText("NEHRAJEŠ");
                             mainWindow.setEnabled(false);
-                            serverResponse = "nehraješ";
                             break;
-                        case "615":
+                        case Protocol.YOUR_TURN:
                             mainWindow.getTurnText().setForeground(Color.BLUE);
                             mainWindow.getTurnText().setText("HRAJEŠ");
                             mainWindow.setEnabled(true);
-                            serverResponse = "hraješ";
                             break;
-                        case "620":
+                        case Protocol.WIN:
                             mainWindow.gameEnd(protocolNum);
-                            serverResponse = "výhra";
                             break;
-                        case "621":
+                        case Protocol.LOSS:
                             mainWindow.gameEnd(protocolNum);
-                            serverResponse = "prohra";
                             break;
-                        case "622":
+                        case Protocol.DRAW:
                             mainWindow.gameEnd(protocolNum);
-                            serverResponse = "remíza";
                             break;
-                        case "700":
+                        case Protocol.NEW_GAME:
                             mainWindow.regame();
-                            serverResponse = "nová hra";
                             break;
-                        case "701":
+                        case Protocol.OPPONENT_LEFT:
                             mainWindow.opponentDisconnected();
-                            serverResponse = "spoluhráč se odpojil";
+                            break;
+                        case Protocol.GENERAL_FAIL:
+                            //TODO dodělat general fail case
                             break;
                             
                         default:
                             serverResponse = "0";
+                            //TODO dodělat default case
                             break;
                     }
                     System.out.println(serverResponse);
+                    //smazat až bude hotovo
                 } else {
                     socket.close();
                     done = true;
-                    System.out.println("konec komunikace");
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block

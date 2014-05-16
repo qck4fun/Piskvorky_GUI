@@ -11,7 +11,7 @@ public class GameGridClick implements MouseListener {
 
     private final GameGridMap gameGridMap;
     private final Connection connection;
-    private static Point key;
+    private Point key;
 
     public GameGridClick(GameGridMap gameGridMap, Connection connection) {
         this.gameGridMap = gameGridMap;
@@ -20,12 +20,10 @@ public class GameGridClick implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
-        key = null;
-
-        for (Entry<Point, JLabel> blabla : gameGridMap.getGameGridMap().entrySet()) {
-            if (blabla.getValue().equals(e.getComponent())) {
-                key = blabla.getKey();
+        key = null; 
+        for (Entry<Point, JLabel> coordinate : gameGridMap.getGameGridMap().entrySet()) {
+            if (coordinate.getValue().equals(e.getComponent())) {
+                key = coordinate.getKey();
                 connection.addToOutput(102 + " " + key.x + "," + key.y);
                 break;
             }
