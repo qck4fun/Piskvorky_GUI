@@ -121,6 +121,7 @@ public class MainWindow extends JFrame {
         if (firstGame == true) {
             infoPanel.remove(login);
             infoPanel.remove(loginText);
+            System.out.println("tralalala");
         }
         gameReadyWait(gameReady);
         validate();
@@ -135,13 +136,7 @@ public class MainWindow extends JFrame {
             infoPanel.remove(progressBar);
             infoPanel.remove(text);
             repaintMainWindow();
-        }
-    }
-
-    public void metoda(boolean gameReady) {
-        if (gameReady == true) {
-            infoPanel.remove(login);
-            infoPanel.remove(loginText);
+            System.out.println("je to tam");
         }
     }
 
@@ -206,7 +201,7 @@ public class MainWindow extends JFrame {
     public void regame() {
         infoPanel.removeAll();
         gridPanel.removeAll();
-        initiateGame(firstGame);
+        initiateGame(connection.getGameReady());
     }
 
     public void freshNewGame() {

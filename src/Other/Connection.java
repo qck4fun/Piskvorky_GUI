@@ -156,4 +156,9 @@ public final class Connection implements Runnable {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public boolean getGameReady() {
+        return gameReady;
+    }
+    
 }
