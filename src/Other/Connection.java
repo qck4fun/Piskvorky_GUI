@@ -37,8 +37,8 @@ public final class Connection implements Runnable {
         setConnection();
         setInputAndOutput();
     }
-    
-    public void setConnection() {    
+
+    public void setConnection() {
         try {
             address = InetAddress.getByName("127.0.1.1");
             socket = new Socket(address, PORT);
@@ -78,14 +78,14 @@ public final class Connection implements Runnable {
                     switch (protocolNum) {
                         case Protocol.LOGIN_SUCCESS:
                             gameReady = false;
-                            mainWindow.gameReadyWait();
+                            mainWindow.initiateGame(gameReady);
                             break;
                         case Protocol.LOGIN_FAIL:
                             mainWindow.createLoginErrorWindow();
                             break;
                         case Protocol.GAME_READY:
                             gameReady = true;
-                            mainWindow.gameReadyWait();
+                            mainWindow.initiateGame(gameReady);
                             break;
                         case Protocol.POSITION_OCCUPIED:
                             mainWindow.positionOccupied();
@@ -121,10 +121,7 @@ public final class Connection implements Runnable {
                         case Protocol.OPPONENT_LEFT:
                             mainWindow.opponentDisconnected();
                             break;
-                        case Protocol.GENERAL_FAIL:
-                            //TODO dodělat general fail case
-                            break;
-                            
+
                         default:
                             serverResponse = "0";
                             //TODO dodělat default case
@@ -150,11 +147,7 @@ public final class Connection implements Runnable {
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
-    
-    public boolean getGameReady() {
-        return gameReady;
-    }
-    
+
     public void socketClose() {
         try {
             done = true;

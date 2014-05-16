@@ -41,11 +41,14 @@ public class MainWindow extends JFrame {
     private Icon myIcon;
     private Icon enemyIcon;
 
+    private boolean firstGame;
+
     public MainWindow(Connection connection) {
         this.connection = connection;
         connection.setMainWindow(this);
         gameGridMap = new GameGridMap();
         init();
+        firstGame = true;
     }
 
     private void init() {
@@ -67,14 +70,15 @@ public class MainWindow extends JFrame {
         infoPanel.add(loginText, BorderLayout.EAST);
 
         progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
         text = new JLabel("Vyčkejte na připojení dalšího hrače");
-                    
+
         URL myIconUrl = getClass().getClassLoader().getResource("img/cross.png");
         URL enemyIconUrl = getClass().getClassLoader().getResource("img/circle.png");
-        
+
         myIcon = new ImageIcon(myIconUrl);
         enemyIcon = new ImageIcon(enemyIconUrl);
-        
+
         turnText = new JLabel("NEHRAJEŠ");
         turnText.setForeground(Color.RED);
 
@@ -113,22 +117,32 @@ public class MainWindow extends JFrame {
         JOptionPane.showMessageDialog(this, "Došlo k chybě při přihlašování.\nZkuste to prosím znovu.", "Přihlašovací chyba", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void gameReadyWait() {
-        infoPanel.remove(login);
-        infoPanel.remove(loginText);
-        infoPanel.remove(turnText);
+    public void initiateGame(boolean gameReady) {
+        if (firstGame == true) {
+            infoPanel.remove(login);
+            infoPanel.remove(loginText);
+        }
+        gameReadyWait(gameReady);
+        validate();
+        repaint();
+    }
+
+    private void gameReadyWait(boolean gameReady) {
         setSize(260, 80);
-        progressBar.setIndeterminate(true);
-        if (connection.getGameReady() == true) {
+        infoPanel.add(progressBar, BorderLayout.NORTH);
+        infoPanel.add(text);
+        if (gameReady == true) {
             infoPanel.remove(progressBar);
             infoPanel.remove(text);
             repaintMainWindow();
-        } else {
-            infoPanel.add(progressBar, BorderLayout.NORTH);
-            infoPanel.add(text);
         }
-        validate();
-        repaint();
+    }
+
+    public void metoda(boolean gameReady) {
+        if (gameReady == true) {
+            infoPanel.remove(login);
+            infoPanel.remove(loginText);
+        }
     }
 
     public void paintIcon(String incMsg) {
@@ -170,6 +184,7 @@ public class MainWindow extends JFrame {
         if (result == 0) {
             int resultOption = JOptionPane.showOptionDialog(this, "Chceš si zahrát proti tomu samému spoluhráči nebo proti jinému?\n Ano: stejný\nNe: jiný", "Nová hra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (resultOption == 0) {
+                firstGame = false;
                 connection.addToOutput("103");
             } else {
                 freshNewGame();
@@ -181,10 +196,9 @@ public class MainWindow extends JFrame {
 
     public void opponentDisconnected() {
         int result = JOptionPane.showOptionDialog(this, "Spoluhráč se odpojil. Chceš hru spustit znovu?\nPokud ne, program bude ukončen.", "Chyba", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
-        if(result == 0) {
+        if (result == 0) {
             freshNewGame();
-        }
-        else {
+        } else {
             System.exit(0);
         }
     }
@@ -192,7 +206,7 @@ public class MainWindow extends JFrame {
     public void regame() {
         infoPanel.removeAll();
         gridPanel.removeAll();
-        gameReadyWait();
+        initiateGame(firstGame);
     }
 
     public void freshNewGame() {
@@ -202,7 +216,7 @@ public class MainWindow extends JFrame {
         new Thread(connection).start();
         new MainWindow(connection);
     }
-    
+
     public void positionOccupied() {
         JOptionPane.showMessageDialog(this, "Toto místo je již obsazeno!", "Chyba", JOptionPane.ERROR_MESSAGE);
     }
