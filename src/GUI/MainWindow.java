@@ -20,6 +20,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
+/**
+ * Třída reprezentující veškerou grafiku hry Piškvorky
+ * 
+ * @author Adam Žák
+ */
 public class MainWindow extends JFrame {
 
     /**
@@ -42,7 +47,14 @@ public class MainWindow extends JFrame {
     private Icon enemyIcon;
 
     private boolean firstGame;
-
+    
+    /**
+     * Konstruktor třídy, který předává odkaz na třídu Connection, dále
+     * vytváří mapu hracího pole a inicializuje grafické kompomenty
+     * aplikace.
+     * 
+     * @param connection odkaz na instanci třídy Connection
+     */
     public MainWindow(Connection connection) {
         this.connection = connection;
         connection.setMainWindow(this);
@@ -51,6 +63,9 @@ public class MainWindow extends JFrame {
         firstGame = true;
     }
 
+    /**
+     * Privátní metoda vytvářející úvodní přihlašovací okno aplikace.
+     */
     private void init() {
         setTitle("Piškvorky");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,6 +105,9 @@ public class MainWindow extends JFrame {
         pack();
     }
 
+    /**
+     * Privátní metoda, která vytváří hrací pole hry.
+     */
     private void createGameGrid() {
         URL background = getClass().getClassLoader().getResource("img/blank.png");
         for (int row = 0; row < 16; row++) {
@@ -103,7 +121,10 @@ public class MainWindow extends JFrame {
             }
         }
     }
-
+    
+    /**
+     * Metoda slouží k vykreslení hracího pole do hlavního okna aplikace.
+     */
     public void repaintMainWindow() {
         setSize(525, 580);
         infoPanel.add(turnText, BorderLayout.CENTER);
@@ -113,21 +134,38 @@ public class MainWindow extends JFrame {
         repaint();
     }
 
+    /**
+     * Metoda vyhazuje dialogové okno v případě špatného přihlašovacího vstupu
+     * uživatele.
+     */
     public void createLoginErrorWindow() {
         JOptionPane.showMessageDialog(this, "Došlo k chybě při přihlašování.\nZkuste to prosím znovu.", "Přihlašovací chyba", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Metoda, která v případě, že jde o první hru dvou hráčů vymaže obsah 
+     * přihlašovacího okna a poté zavolá privátní metodu gameReadyWait.
+     * 
+     * @param gameReady true pokud je hra připravena; slouží pro předání 
+     *                   privátní metodě gameReadyWait
+     */
     public void initiateGame(boolean gameReady) {
         if (firstGame == true) {
             infoPanel.remove(login);
             infoPanel.remove(loginText);
-            System.out.println("tralalala");
         }
         gameReadyWait(gameReady);
         validate();
         repaint();
     }
 
+    /**
+     * Privátní metoda, která vykreslí do okna načítací bar pokud hra není 
+     * připravena.Pokud je hra připravena tento bar odstraní a volá metodu
+     * {@link #repaintMainWindow() repaintMainWindow}.
+     * 
+     * @param gameReady true pokud je hra připravena
+     */
     private void gameReadyWait(boolean gameReady) {
         setSize(260, 80);
         infoPanel.add(progressBar, BorderLayout.NORTH);
@@ -136,10 +174,17 @@ public class MainWindow extends JFrame {
             infoPanel.remove(progressBar);
             infoPanel.remove(text);
             repaintMainWindow();
-            System.out.println("je to tam");
         }
     }
 
+    /**
+     * Metoda slouží k přiřazení obrázku křížku či kolečka se kterým 
+     * hráč hraje.Implicitně má lokální hráč křížek a síťový spoluhráč
+     * kolečko.Následně tento obrázek vykreslí na souřadnice, které jsou
+     * součástí zprávy od serveru.
+     *  
+     * @param incMsg příchozí zpráva od serveru s kterou metoda pracuje
+     */
     public void paintIcon(String incMsg) {
         String protocolNum = Protocol.extractProtocolNum(incMsg);
         Icon icon = null;
@@ -158,10 +203,34 @@ public class MainWindow extends JFrame {
         gameGridMap.getGameGridMap().get(key).repaint();
     }
 
-    public JLabel getTurnText() {
-        return turnText;
+    /**
+     * Metoda vyhodnocuje zda je hráč na tahu a podle toho píše nad 
+     * hrací poli informaci.
+     * 
+     * @param yourTurn true pokud je hráč na řadě
+     */
+    public void isYourTurn(boolean yourTurn) {
+        if (yourTurn == true) {
+            turnText.setForeground(Color.BLUE);
+            turnText.setText("HRAJEŠ");
+            setEnabled(true);
+        } else {
+            turnText.setForeground(Color.RED);
+            turnText.setText("NEHRAJEŠ");
+            setEnabled(false);
+        }
     }
 
+    /**
+     * Metoda vyhodnocuje na základě číselných zpráv od serveru zda je 
+     * konec hry.Hra končí výhrou, prohrou nebo remízou - při každém z
+     * těchto scénářů vyskočí dialogové okno, které se ptá jestli si
+     * hráč přeje hrát dále nebo ne.Pokud ne tak aplikace končí.Pokud
+     * ano tak se objeví další okno s dotazem jestli chce hrát s tím 
+     * samým hráčem nebo s jiným(nový start hry).
+     * 
+     * @param protocolNum číslo protokolu přijaté serverem
+     */
     public void gameEnd(String protocolNum) {
         String errorText = null;
         switch (protocolNum) {
@@ -189,6 +258,10 @@ public class MainWindow extends JFrame {
         }
     }
 
+    /**
+     * Metoda vyhazující dialogové okno pokud se jeden z hráčů 
+     * odpojil.Nabízí možnost hru ukončit nebo ji spustit znovu. 
+     */
     public void opponentDisconnected() {
         int result = JOptionPane.showOptionDialog(this, "Spoluhráč se odpojil. Chceš hru spustit znovu?\nPokud ne, program bude ukončen.", "Chyba", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
         if (result == 0) {
@@ -198,12 +271,20 @@ public class MainWindow extends JFrame {
         }
     }
 
+    /**
+     * Metoda smaže veškerý obsah hlavního okna a následně zavolá metodu
+     * {@link #initiateGame(boolean) initiateGame}.
+     */
     public void regame() {
         infoPanel.removeAll();
         gridPanel.removeAll();
         initiateGame(connection.getGameReady());
     }
 
+    /**
+     * Metoda schová hlavní okno původní aplikace, uzavře socket a 
+     * vytvoří novou instanci připojení a grafiky hry.
+     */
     public void freshNewGame() {
         dispose();
         connection.socketClose();
@@ -212,6 +293,10 @@ public class MainWindow extends JFrame {
         new MainWindow(connection);
     }
 
+    /**
+     * Metoda vyhodí chybovou hlášku když hráč chce umístit svůj symbol
+     * na místo kde už nějaký je.
+     */
     public void positionOccupied() {
         JOptionPane.showMessageDialog(this, "Toto místo je již obsazeno!", "Chyba", JOptionPane.ERROR_MESSAGE);
     }

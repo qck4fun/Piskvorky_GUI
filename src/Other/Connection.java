@@ -1,7 +1,6 @@
 package Other;
 
 import GUI.MainWindow;
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,12 +9,19 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
+/**
+ * Třída, která se stará o veškerou komunikaci se serverem a následné
+ * volání metod na překreslování hlavního okna aplikace.
+ * 
+ * @author Adam Žák
+ */
 public final class Connection implements Runnable {
 
+    /**
+     * Port, na který se klient připojuje
+     */
     public static final int PORT = 1099;
 
     private MainWindow mainWindow;
@@ -29,26 +35,32 @@ public final class Connection implements Runnable {
     private static String incMsg;
     private String protocolNum;
     private boolean gameReady;
+    private boolean yourTurn;
 
     /**
-     *
+     * Konstruktor třídy Connection.
      */
     public Connection() {
         setConnection();
         setInputAndOutput();
     }
 
-    public void setConnection() {
+    /**
+     * Privátní metoda nastavující připojení k serveru.
+     */
+    private void setConnection() { 
         try {
             address = InetAddress.getByName("127.0.1.1");
             socket = new Socket(address, PORT);
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Došlo k chybě při navazování spojení se serverem!", "Chyba", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
     }
 
+    /**
+     * Privátní metoda nastavující vstup a výstup.
+     */
     private void setInputAndOutput() {
         try {
             input = new BufferedReader(new InputStreamReader(
@@ -57,14 +69,18 @@ public final class Connection implements Runnable {
             output = new PrintWriter(new OutputStreamWriter(
                     socket.getOutputStream(), "UTF-8"), true);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Klientem použitá znaková sada není serverem podporována!", "Chyba", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Došlo k chybě při nastavování vstupu a výstupu!", "Chyba", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
     }
 
+    /**
+     * Metoda slouží ke čtení zpráv ze serveru, interpretaci příchozích zpráv a 
+     * volání příslušných metod.
+     */
     @Override
     public void run() {
         while (!done) {
@@ -72,8 +88,6 @@ public final class Connection implements Runnable {
                 incMsg = input.readLine();
                 if (incMsg != null) {
                     protocolNum = Protocol.extractProtocolNum(incMsg);
-
-                    String serverResponse = null;
 
                     switch (protocolNum) {
                         case Protocol.LOGIN_SUCCESS:
@@ -97,14 +111,12 @@ public final class Connection implements Runnable {
                             mainWindow.paintIcon(incMsg);
                             break;
                         case Protocol.NOT_YOUR_TURN:
-                            mainWindow.getTurnText().setForeground(Color.RED);
-                            mainWindow.getTurnText().setText("NEHRAJEŠ");
-                            mainWindow.setEnabled(false);
+                            yourTurn = false;
+                            mainWindow.isYourTurn(yourTurn);
                             break;
                         case Protocol.YOUR_TURN:
-                            mainWindow.getTurnText().setForeground(Color.BLUE);
-                            mainWindow.getTurnText().setText("HRAJEŠ");
-                            mainWindow.setEnabled(true);
+                            yourTurn = true;
+                            mainWindow.isYourTurn(yourTurn);
                             break;
                         case Protocol.WIN:
                             mainWindow.gameEnd(protocolNum);
@@ -123,12 +135,9 @@ public final class Connection implements Runnable {
                             break;
 
                         default:
-                            serverResponse = "0";
                             //TODO dodělat default case
                             break;
                     }
-                    System.out.println(serverResponse);
-                    //smazat až bude hotovo
                 } else {
                     socket.close();
                     done = true;
@@ -139,24 +148,43 @@ public final class Connection implements Runnable {
             }
         }
     }
-
+    
+    /**
+     * Metoda, která přidává zadaný parametr do výstupu aplikace.
+     * 
+     * @param message zpráva 
+     */
     public synchronized void addToOutput(String message) {
         output.println(message);
     }
-
+    
+    /**
+     * Metoda nastavující odkaz na instanci třídy MainWindow.
+     * 
+     * @param mainWindow odkaz na instanci třídy MainWindow
+     */
     public void setMainWindow(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
 
+    /**
+     * Metoda sloužící k uzavření socketu.
+     */
     public void socketClose() {
         try {
             done = true;
             socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Došlo k chybě při uzavírání socketu!", "Chyba", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
     }
-
+    
+    /**
+     * Metoda vracející odkaz na boolovský datový atribut gameReady.
+     * 
+     * @return odkaz na boolovský datový atribut gameReady
+     */
     public boolean getGameReady() {
         return gameReady;
     }

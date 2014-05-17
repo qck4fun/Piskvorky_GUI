@@ -11,8 +11,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author adam
+ * Třída pracující se vstupem od uživatele při přihlašování do hry.
+ * 
+ * @author Adam Žák
  */
 public class LoginTextInsert implements ActionListener {
     
@@ -20,18 +21,26 @@ public class LoginTextInsert implements ActionListener {
     
     private final Connection connection;
     
+    /**
+     * Konstruktor třídy předávající odkaz na instanci třídy MainWindow
+     * a Connection.
+     * 
+     * @param mainWindow odkaz na instanci třídy MainWindow
+     * @param connection odkaz na instanci třídy Connection
+     */
     public LoginTextInsert(MainWindow mainWindow, Connection connection) {
         this.mainWindow = mainWindow;
         this.connection = connection;
     }
 
+    /**
+     * Metoda posílající vstup uživatele při přihlašování serveru
+     * 
+     * @param e informace o ActionEventu
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!(e.getActionCommand().equals(""))) {
             String userName = e.getActionCommand();
             connection.addToOutput(101 + " " + userName);
-        } else {
-            JOptionPane.showMessageDialog(mainWindow, "Zadej uživatelské jméno!", "Chyba", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

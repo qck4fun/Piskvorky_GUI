@@ -5,8 +5,19 @@ import javax.swing.SwingUtilities;
 import GUI.MainWindow;
 import Other.Connection;
 
+/**
+ * Třída sloužící ke spustění grafického klienta Piškvorek.
+ * 
+ * @author Adam Žák
+ */
 public class Main {
-
+    
+    /**
+     * Spustí vlákno s instancí třídy Connection a vytvoří hlavní okno 
+     * aplikace.
+     * 
+     * @param args ignored
+     */
     public static void main(String[] args) {
 
         Connection connection = new Connection();

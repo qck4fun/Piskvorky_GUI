@@ -34,7 +34,7 @@ public final class Protocol {
 
     /**
      * Vrati substring s cislem zpravy protokolu. Pro zpravy, ktere neodpovidaji
-     * protokolu -> delkou kratsi nez tri vrati String, ktery nebude souhlasit
+     * protokolu - delkou kratsi nez tri vrati String, ktery nebude souhlasit
      * se zadny cislem protokolu. To je tak proto, aby pri zaslani prazdne
      * zpravy nenastala vyjimka pri volani metody substring
      *     
