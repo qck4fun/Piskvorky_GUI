@@ -20,7 +20,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        Connection connection = new Connection();
+        final Connection connection = new Connection();
         new Thread(connection).start();
         
         SwingUtilities.invokeLater(new Runnable() {
