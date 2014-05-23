@@ -133,18 +133,14 @@ public final class Connection implements Runnable {
                         case Protocol.OPPONENT_LEFT:
                             mainWindow.opponentDisconnected();
                             break;
-
-                        default:
-                            //TODO dodělat default case
-                            break;
                     }
                 } else {
                     socket.close();
                     done = true;
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Došlo k chybě na vstupu. Hra bude ukončena.", "Chyba", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
             }
         }
     }
